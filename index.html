@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ne">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/Fav.png">
+    <title>हाम्रो यात्रा (Our Journey)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Gotu&family=Lora:ital,wght@0,400;0,600;1,400&family=Oswald:wght@300;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- GLOBAL AUDIO PLAYER -->
+    <div id="audioPlayer" class="audio-player">
+    <button id="playBtn" class="control-btn" aria-label="Play">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z"/>
+        </svg>
+    </button>
+    <div class="volume-control">
+        <svg class="volume-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/>
+            <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/>
+            <path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>
+        </svg>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.02">
+    </div>
+</div>
+
+
+    <!-- MAIN SPLIT CONTAINER -->
+    <main class="split-layout">
+
+        <!-- LEFT PANEL: Film Strip -->
+        <aside class="film-strip-panel" id="filmStrip">
+            <div class="film-strip-track" id="filmTrack">
+                <!-- Items injected by JS -->
+            </div>
+
+            <!-- Decorations -->
+            <div class="sprocket-holes-left"></div>
+            <div class="sprocket-holes-right"></div>
+        </aside>
+
+        <!-- RIGHT PANEL: The Stage -->
+        <section class="stage-panel" id="rightPanel">
+            <div class="stage-bg-layer" id="stageBg"></div>
+            <div class="stage-overlay"></div>
+
+            <div class="stage-content" id="stageContent">
+                <h1 class="stage-title">...</h1>
+                <p class="stage-desc">...</p>
+                <div class="stage-meta">...</div>
+                <div class="hint-text">Click to Open Memory</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FULLSCREEN MEMORY OVERLAY -->
+    <section id="fullscreenOverlay" class="fullscreen-memory">
+        <button id="closeFsBtn" class="back-btn">← फर्किनु</button>
+
+        <div class="fs-hero">
+            <h1 class="fs-title">Title</h1>
+            <p class="fs-desc">Description</p>
+        </div>
+
+        <div class="polaroid-grid" id="polaroidGrid">
+            <!-- Polaroids injected here -->
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
