@@ -26,7 +26,32 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+/* --- SCROLLBAR CUSTOMIZATION --- */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Width for vertical scrollbars */
+  height: 8px;
+  /* Height for horizontal scrollbars */
+}
 
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+  /* Dark track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  /* Subtle light grey thumb */
+  border-radius: 4px;
+  /* Rounded corners */
+  border: 2px solid var(--bg-dark);
+  /* Padding effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+  /* Brighter on hover */
+}
 /* --- AUDIO PLAYER (Spotify Style) --- */
 .audio-player {
   position: fixed;
