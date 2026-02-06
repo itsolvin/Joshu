@@ -1,3 +1,28 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// --- FIREBASE CONFIGURATION ---
+// TODO: User must replace these with their own project keys
+const firebaseConfig = {
+  apiKey: "AIzaSyAu4iY2hmn45c9Zk0Sfx0Kw4IDzAHnh_0I",
+  authDomain: "november24-fc57c.firebaseapp.com",
+  databaseURL: "https://november24-fc57c-default-rtdb.firebaseio.com",
+  projectId: "november24-fc57c",
+  storageBucket: "november24-fc57c.firebasestorage.app",
+  messagingSenderId: "917954305225",
+  appId: "1:917954305225:web:3769cc28dec82129d68118",
+  measurementId: "G-YCDV5QDMCG",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const memories = [
   {
     id: "roadtrip",
@@ -304,18 +329,160 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenOverlay.querySelector(".fs-desc").textContent = mem.desc;
 
     polaroidGrid.innerHTML = "";
-    mem.polaroids.forEach((p, i) => {
-      const card = document.createElement("div");
-      card.className = "fs-polaroid";
-      const rotation = Math.random() * 10 - 5;
-      card.style.setProperty("--rotation", `${rotation}deg`);
-      card.style.animationDelay = `${i * 0.15}s`;
-      card.innerHTML = `
-                <img src="${p.img}" alt="Mem">
-                <p class="fs-caption">${p.caption}</p>
-            `;
-      polaroidGrid.appendChild(card);
-    });
+
+    // Slight delay to ensure dimensions are available
+    setTimeout(() => {
+      const containerWidth = polaroidGrid.clientWidth || window.innerWidth;
+      const containerHeight = polaroidGrid.clientHeight || window.innerHeight;
+
+      // GLOBAL Z-INDEX for this session
+      let globalZIndex = 1000;
+
+      // 1. RENDER IMMEDIATELY (Optimistic)
+      // This ensures the user sees photos even if Firebase isn't connected yet.
+      const savedLayout =
+        JSON.parse(localStorage.getItem(`layout_${mem.id}`)) || {};
+
+      mem.polaroids.forEach((p, i) => {
+        const card = document.createElement("div");
+        card.className = "fs-polaroid";
+        polaroidGrid.appendChild(card); // Add to DOM immediately
+
+        let posX, posY, rotation;
+
+        // Initial position (Local or Random)
+        if (savedLayout[i]) {
+          posX = savedLayout[i].x;
+          posY = savedLayout[i].y;
+          rotation = savedLayout[i].rot;
+          card.style.animation = "none";
+          card.style.opacity = "1";
+        } else {
+          rotation = Math.random() * 20 - 10;
+          posX = Math.max(20, Math.random() * (containerWidth - 220));
+          posY = Math.max(20, Math.random() * (containerHeight / 1.5));
+          card.style.animationDelay = `${i * 0.1}s`;
+        }
+
+        card.style.left = `${posX}px`;
+        card.style.top = `${posY}px`;
+        card.style.setProperty("--rotation", `${rotation}deg`);
+
+        card.innerHTML = `
+             <div class="pin" style="display:none;"></div>
+             <img src="${p.img}" alt="Mem" draggable="false">
+             <p class="fs-caption">${p.caption}</p>
+          `;
+
+        setupDragEvents(card, i);
+      });
+
+      // 2. CONNECT FIREBASE (Sync)
+      // This will override positions when the server responds
+      const memoryRef = ref(db, `layouts/${mem.id}`);
+
+      onValue(
+        memoryRef,
+        (snapshot) => {
+          const remoteLayout = snapshot.val();
+          if (!remoteLayout) return; // If DB is empty, keep local/random positions
+
+          mem.polaroids.forEach((p, i) => {
+            const card = polaroidGrid.children[i];
+            if (!card) return;
+
+            if (remoteLayout[i]) {
+              // Only update if not currently being dragged by THIS user
+              if (!card.classList.contains("dragging")) {
+                card.style.left = `${remoteLayout[i].x}px`;
+                card.style.top = `${remoteLayout[i].y}px`;
+                card.style.setProperty(
+                  "--rotation",
+                  `${remoteLayout[i].rot}deg`,
+                );
+              }
+            }
+          });
+        },
+        (error) => {
+          console.error("Firebase Read Error:", error);
+        },
+      );
+
+      // Drag Event Helper
+      function setupDragEvents(card, index) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        const startDrag = (e) => {
+          isDragging = true;
+          card.classList.add("dragging");
+          card.style.transition = "none";
+
+          globalZIndex++;
+          card.style.zIndex = globalZIndex;
+
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+          startX = clientX;
+          startY = clientY;
+
+          initialLeft = card.offsetLeft;
+          initialTop = card.offsetTop;
+
+          e.preventDefault();
+        };
+
+        const doDrag = (e) => {
+          if (!isDragging) return;
+
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+          const dx = clientX - startX;
+          const dy = clientY - startY;
+
+          card.style.left = `${initialLeft + dx}px`;
+          card.style.top = `${initialTop + dy}px`;
+        };
+
+        const stopDrag = () => {
+          if (!isDragging) return;
+          isDragging = false;
+          card.classList.remove("dragging");
+          card.style.transition = "box-shadow 0.3s ease, transform 0.3s ease";
+
+          // 3. SAVE TO BOTH (Local + Cloud)
+          // Save locally for instant load next time
+          const currentLayout =
+            JSON.parse(localStorage.getItem(`layout_${mem.id}`)) || {};
+          currentLayout[index] = {
+            x: parseFloat(card.style.left),
+            y: parseFloat(card.style.top),
+            rot: parseFloat(card.style.getPropertyValue("--rotation")),
+          };
+          localStorage.setItem(
+            `layout_${mem.id}`,
+            JSON.stringify(currentLayout),
+          );
+
+          // Save to Cloud
+          set(
+            ref(db, `layouts/${mem.id}/${index}`),
+            currentLayout[index],
+          ).catch((e) => console.error("Firebase Write Error:", e));
+        };
+
+        card.addEventListener("mousedown", startDrag);
+        document.addEventListener("mousemove", doDrag);
+        document.addEventListener("mouseup", stopDrag);
+
+        card.addEventListener("touchstart", startDrag, { passive: false });
+        document.addEventListener("touchmove", doDrag, { passive: false });
+        document.addEventListener("touchend", stopDrag);
+      }
+    }, 100);
   }
 
   document.getElementById("closeFsBtn").addEventListener("click", () => {

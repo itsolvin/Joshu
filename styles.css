@@ -26,6 +26,7 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
 /* --- SCROLLBAR CUSTOMIZATION --- */
 ::-webkit-scrollbar {
   width: 8px;
@@ -52,6 +53,7 @@ body {
   background: rgba(255, 255, 255, 0.4);
   /* Brighter on hover */
 }
+
 /* --- AUDIO PLAYER (Spotify Style) --- */
 .audio-player {
   position: fixed;
@@ -130,6 +132,8 @@ input[type="range"] {
   outline: none;
   cursor: pointer;
   transition: background 0.2s ease;
+  appearance: none;
+  /* Fix compatibility warning */
 }
 
 input[type="range"]:hover {
@@ -346,17 +350,21 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* IMPROVED NEPALI TITLE TYPOGRAPHY */
 .stage-title {
-  font-family: var(--font-body); /* Gotu font - better for Nepali */
+  font-family: var(--font-body);
+  /* Gotu font - better for Nepali */
   font-size: 4rem;
   line-height: 1.2;
   color: #fff;
-  text-transform: none; /* Don't uppercase Nepali text */
+  text-transform: none;
+  /* Don't uppercase Nepali text */
   text-shadow:
     3px 3px 0px var(--theme-accent),
     6px 6px 20px rgba(0, 0, 0, 0.5);
-  letter-spacing: 0.01em; /* Minimal letter spacing for Nepali */
+  letter-spacing: 0.01em;
+  /* Minimal letter spacing for Nepali */
   font-weight: 600;
-  word-spacing: 0.1em; /* Slightly increase word spacing */
+  word-spacing: 0.1em;
+  /* Slightly increase word spacing */
 }
 
 .stage-desc {
@@ -391,41 +399,56 @@ input[type="range"]::-moz-range-thumb:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #111;
+  background: #f0f0f5
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d1d1d6' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   z-index: 1500;
   padding: 60px 40px;
-  overflow-y: auto;
+  overflow: hidden;
+  /* Prevent scrolling, allow dragging */
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.9) translateY(30px);
+
+  /* CLOSING STATE: Subtle Zoom out */
+  transform: scale(0.95);
+  filter: none;
+  /* Removed blur */
+
   transition:
-    opacity 0.5s ease,
-    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity 0.4s ease,
+    transform 0.4s ease;
 }
 
 .fullscreen-memory.active {
   opacity: 1;
   pointer-events: auto;
-  transform: scale(1) translateY(0);
+
+  /* OPEN STATE: Normal */
+  transform: scale(1);
+  filter: none;
+
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .back-btn {
   position: fixed;
   top: 30px;
   left: 30px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border: none;
-  color: #fff;
+  color: #333;
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
   font-family: var(--font-body);
-  z-index: 20;
+  z-index: 20000;
+  /* Ensure it's above polaroids (z-index ~1000+) */
   transition: all 0.3s ease;
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   transform: translateX(-5px);
 }
 
@@ -447,7 +470,8 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* IMPROVED FULLSCREEN TITLE */
 .fs-title {
-  font-family: var(--font-body); /* Gotu for Nepali */
+  font-family: var(--font-body);
+  /* Gotu for Nepali */
   font-size: 3.5rem;
   color: var(--theme-accent);
   font-weight: 600;
@@ -458,7 +482,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .fs-desc {
   font-size: 1.2rem;
-  color: #aaa;
+  color: #555;
   max-width: 600px;
   margin: 20px auto 0;
   line-height: 1.6;
@@ -466,24 +490,70 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .polaroid-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 40px;
-  max-width: 1200px;
+  position: relative;
+  /* For absolute positioning of children */
+  width: 100%;
+  height: calc(100vh - 200px);
+  /* Fill remaining space */
+  max-width: 1400px;
   margin: 0 auto;
-  padding-bottom: 100px;
 }
 
 .fs-polaroid {
+  position: absolute;
+  /* Enable dragging */
   background: #fff;
   color: #222;
-  padding: 10px 10px 30px 10px;
-  width: 250px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 8px 8px 35px 8px;
+  /* Reduced padding for smaller size */
+  width: 190px;
+  /* Reduced from 280px */
+  box-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.1),
+    5px 5px 15px rgba(0, 0, 0, 0.15);
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.1s linear;
+  /* Linear transform for dragging */
   opacity: 1;
-  animation: polaroidAppear 0.7s ease;
+  animation: polaroidAppear 0.7s ease backwards;
+  cursor: grab;
+  touch-action: none;
+  /* Prevent scroll on touch devices */
+}
+
+/* Texture overlay for glossy paper effect - Toned down */
+.fs-polaroid::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Much more subtle gradient to avoid "white side" look */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0) 30%
+  );
+  pointer-events: none;
+}
+
+/* Active dragging state */
+.fs-polaroid.dragging {
+  cursor: grabbing;
+  box-shadow: 15px 30px 60px rgba(0, 0, 0, 0.3);
+  /* Big lift */
+  transform: scale(1.1) rotate(var(--rotation, 0deg)) !important;
+  /* Maintain rotation */
+  z-index: 2000;
+}
+
+.fs-polaroid:active {
+  cursor: grabbing;
+  box-shadow: 10px 20px 40px rgba(0, 0, 0, 0.3);
+  /* Lift effect */
+  z-index: 1000 !important;
 }
 
 @keyframes polaroidAppear {
@@ -491,6 +561,7 @@ input[type="range"]::-moz-range-thumb:hover {
     opacity: 0;
     transform: translateY(50px) scale(0.9) rotate(0deg);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1) rotate(var(--rotation, 0deg));
@@ -498,10 +569,10 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .fs-polaroid:hover {
-  transform: scale(1.15) rotate(-2deg) translateY(-15px) !important;
-  z-index: 10;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
-  cursor: pointer;
+  /* Only hover effect when not dragging/active */
+  transform: scale(1.05) rotate(var(--rotation, 0deg));
+  z-index: 100;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .fs-polaroid img {
@@ -514,8 +585,9 @@ input[type="range"]::-moz-range-thumb:hover {
 .fs-caption {
   font-family: "Gotu", sans-serif;
   text-align: center;
-  margin-top: 10px;
-  font-size: 1rem;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  /* Reduced font size */
   color: #444;
   letter-spacing: 0.01em;
 }
@@ -632,12 +704,15 @@ input[type="range"]::-moz-range-thumb:hover {
     background: var(--film-bg);
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE */
   }
 
   .film-strip-panel::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
+    display: none;
+    /* Chrome, Safari */
   }
 
   .film-strip-track {
@@ -833,6 +908,7 @@ input[type="range"]::-moz-range-thumb:hover {
       opacity: 0.5;
       transform: translateX(-50%) scale(1);
     }
+
     50% {
       opacity: 0.9;
       transform: translateX(-50%) scale(1.05);
