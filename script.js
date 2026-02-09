@@ -57,22 +57,58 @@ const memories = [
     audio: "assets/Dates.mp3",
     polaroids: [
       {
-        img: "https://placehold.co/400x450/8d6e63/fff?text=Latte",
-        caption: "मन पर्ने कफी",
+        img: "assets/First day.JPG",
+        caption: "Cutie",
       },
       {
-        img: "https://placehold.co/400x400/5d4037/fff?text=Laugh",
-        caption: "तिम्रो हाँसो",
+        img: "assets/First full.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Burger house.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Late night movie.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
+      },
+      {
+        img: "assets/Snap.JPG",
+        caption: "First Selfie",
       },
     ],
   },
   {
-    id: "summer",
-    title: "गर्मी बिदा (Summer)",
+    id: "Life Together",
+    title: "सँगैको जीवन (Life Together)",
     date: "July 2026",
     desc: "घामको किरण र तिम्रो साथ। सुनौलो दिनहरू।",
     img: "https://placehold.co/1200x800/fbc02d/fff?text=Summer",
-    theme: { accent: "#fbc02d" },
+    theme: { accent: "#C1CCB8" },
     audio: "assets/audio_summer.mp3",
     polaroids: [
       {
@@ -338,6 +374,23 @@ document.addEventListener("DOMContentLoaded", () => {
       // GLOBAL Z-INDEX for this session
       let globalZIndex = 1000;
 
+      // Helper to update grid height based on content
+      const updateGridHeight = () => {
+        let maxBottom = 0;
+        const cards = polaroidGrid.querySelectorAll(".fs-polaroid");
+        cards.forEach((card) => {
+          const top = parseFloat(card.style.top || 0);
+          const height = card.offsetHeight || 300; // Fallback
+          if (top + height > maxBottom) {
+            maxBottom = top + height;
+          }
+        });
+        // Add some padding at the bottom.
+        // We do NOT force it to containerHeight here, because CSS min-height handles the visual fill.
+        // If we force it to window.innerHeight, it + padding causes scroll.
+        polaroidGrid.style.height = `${maxBottom + 100}px`;
+      };
+
       // 1. RENDER IMMEDIATELY (Optimistic)
       // This ensures the user sees photos even if Firebase isn't connected yet.
       const savedLayout =
@@ -350,17 +403,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let posX, posY, rotation;
 
-        // Initial position (Local or Random)
+        // Initialize with clamp to "rescue" lost photos
         if (savedLayout[i]) {
           posX = savedLayout[i].x;
           posY = savedLayout[i].y;
+          // CLAMP: Ensure it's within generic bounds (0 to max width)
+          // We use a safe estimate since containerWidth might vary
+          posX = Math.max(0, Math.min(posX, containerWidth - 150));
+          posY = Math.max(0, posY);
+
           rotation = savedLayout[i].rot;
           card.style.animation = "none";
           card.style.opacity = "1";
         } else {
           rotation = Math.random() * 20 - 10;
-          posX = Math.max(20, Math.random() * (containerWidth - 220));
-          posY = Math.max(20, Math.random() * (containerHeight / 1.5));
+          // SPREAD VERTICALLY: Stagger them down the page
+          const cols = window.innerWidth > 800 ? 3 : 2;
+          const colWidth = containerWidth / cols;
+          const colIndex = i % cols;
+          const rowIndex = Math.floor(i / cols);
+
+          // Add some randomness to the grid positions
+          posX = colIndex * colWidth + Math.random() * (colWidth - 200);
+          posY = rowIndex * 250 + Math.random() * 100;
+
+          // Ensure positive coordinates
+          posX = Math.max(20, posX);
+          posY = Math.max(20, posY);
+
           card.style.animationDelay = `${i * 0.1}s`;
         }
 
@@ -377,6 +447,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setupDragEvents(card, i);
       });
 
+      // Update height after initial placement
+      setTimeout(updateGridHeight, 100);
+
       // 2. CONNECT FIREBASE (Sync)
       // This will override positions when the server responds
       const memoryRef = ref(db, `layouts/${mem.id}`);
@@ -387,6 +460,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const remoteLayout = snapshot.val();
           if (!remoteLayout) return; // If DB is empty, keep local/random positions
 
+          const currentWidth = polaroidGrid.clientWidth || window.innerWidth;
+
           mem.polaroids.forEach((p, i) => {
             const card = polaroidGrid.children[i];
             if (!card) return;
@@ -394,8 +469,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (remoteLayout[i]) {
               // Only update if not currently being dragged by THIS user
               if (!card.classList.contains("dragging")) {
-                card.style.left = `${remoteLayout[i].x}px`;
-                card.style.top = `${remoteLayout[i].y}px`;
+                let rX = remoteLayout[i].x;
+                let rY = remoteLayout[i].y;
+
+                // Safety Clamp for remote data too
+                rX = Math.max(0, Math.min(rX, currentWidth - 50));
+                rY = Math.max(0, rY);
+
+                card.style.left = `${rX}px`;
+                card.style.top = `${rY}px`;
                 card.style.setProperty(
                   "--rotation",
                   `${remoteLayout[i].rot}deg`,
@@ -403,6 +485,8 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             }
           });
+          // Update height after sync
+          setTimeout(updateGridHeight, 100);
         },
         (error) => {
           console.error("Firebase Read Error:", error);
@@ -415,6 +499,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let startX, startY, initialLeft, initialTop;
 
         const startDrag = (e) => {
+          // Prevent drag if clicking on text or inputs if any (optional safety)
+          if (e.target.tagName === "INPUT") return;
+
           isDragging = true;
           card.classList.add("dragging");
           card.style.transition = "none";
@@ -443,8 +530,22 @@ document.addEventListener("DOMContentLoaded", () => {
           const dx = clientX - startX;
           const dy = clientY - startY;
 
-          card.style.left = `${initialLeft + dx}px`;
-          card.style.top = `${initialTop + dy}px`;
+          let newLeft = initialLeft + dx;
+          let newTop = initialTop + dy;
+
+          // BOUNDARY CHECKS
+          const containerW = polaroidGrid.clientWidth;
+          const cardW = card.offsetWidth;
+
+          // Prevent going off left or right edge
+          if (newLeft < 0) newLeft = 0;
+          if (newLeft > containerW - cardW) newLeft = containerW - cardW;
+
+          // Prevent going above top edge
+          if (newTop < 0) newTop = 0;
+
+          card.style.left = `${newLeft}px`;
+          card.style.top = `${newTop}px`;
         };
 
         const stopDrag = () => {
@@ -452,6 +553,9 @@ document.addEventListener("DOMContentLoaded", () => {
           isDragging = false;
           card.classList.remove("dragging");
           card.style.transition = "box-shadow 0.3s ease, transform 0.3s ease";
+
+          // Expand grid if moved to bottom
+          updateGridHeight();
 
           // 3. SAVE TO BOTH (Local + Cloud)
           // Save locally for instant load next time
