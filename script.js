@@ -31,7 +31,7 @@ const memories = [
     desc: "खुला सडक र हाम्रो यात्रा... हरेक मोडमा नयाँ कहानी।",
     img: "assets/Roadtrip.jpeg",
     theme: { accent: "#e74c3c" },
-    audio: "assets/trip.mp3",
+    audio: "assets/Trip.mp3",
     polaroids: [
       {
         img: "assets/Hetauda a.JPG",
@@ -132,7 +132,7 @@ const memories = [
     desc: "केही नबोली पनि धेरै कुरा हुने पलहरू।",
     img: "assets/Quiet.JPG",
     theme: { accent: "#90a4ae" },
-    audio: "assets/quite.mp3",
+    audio: "assets/Quite.mp3",
     polaroids: [
       {
         img: "https://placehold.co/400x400/607d8b/fff?text=Book",
