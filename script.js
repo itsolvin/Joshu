@@ -34,11 +34,11 @@ const memories = [
     audio: "assets/Roadtrip.mp3",
     polaroids: [
       {
-        img: "https://placehold.co/400x400/8a4b4b/fff?text=Fun",
+        img: "assets/Hetauda a.JPG",
         caption: "हावाको स्पर्श",
       },
       {
-        img: "https://placehold.co/400x500/6a3b3b/fff?text=Map",
+        img: "assets/Hetauda j.JPG",
         caption: "नयाँ बाटो",
       },
       {
@@ -66,23 +66,23 @@ const memories = [
       },
       {
         img: "assets/Burger house.JPG",
-        caption: "First Selfie",
+        caption: "Natak",
       },
       {
         img: "assets/Late night movie.JPG",
-        caption: "First Selfie",
+        caption: "Us",
       },
       {
         img: "assets/Snap.JPG",
-        caption: "First Selfie",
+        caption: "Hehe",
       },
       {
-        img: "assets/Snap.JPG",
-        caption: "First Selfie",
+        img: "assets/Mokshya.JPG",
+        caption: "Mokshya",
       },
       {
-        img: "assets/Snap.JPG",
-        caption: "First Selfie",
+        img: "assets/Pokhara.JPG",
+        caption: "Late night pokhara",
       },
       {
         img: "assets/Snap.JPG",
@@ -104,23 +104,23 @@ const memories = [
   },
   {
     id: "Life Together",
-    title: "सँगैको जीवन (Life Together)",
+    title: "बितेका दिनहरू (Life Together)",
     date: "July 2026",
     desc: "घामको किरण र तिम्रो साथ। सुनौलो दिनहरू।",
-    img: "https://placehold.co/1200x800/fbc02d/fff?text=Summer",
+    img: "assets/Life.JPG",
     theme: { accent: "#C1CCB8" },
     audio: "assets/audio_summer.mp3",
     polaroids: [
       {
-        img: "https://placehold.co/400x400/fbc02d/fff?text=Beach",
+        img: "assets/Sunrise 2.JPG",
         caption: "रमाइलो",
       },
       {
-        img: "https://placehold.co/400x500/f57f17/fff?text=Icecream",
+        img: "assets/Sunrise.JPG",
         caption: "मिठो याद",
       },
       {
-        img: "https://placehold.co/400x400/fbc02d/fff?text=Sunset",
+        img: "assets/Life.JPG",
         caption: "साँझपख",
       },
     ],
@@ -145,11 +145,11 @@ const memories = [
     ],
   },
   {
-    id: "music",
-    title: "संगीत (Concert)",
+    id: "Food",
+    title: "स्वादका सम्झनाहरू (Food)",
     date: "Oct 2026",
     desc: "धूनमा हराएको त्यो साँझ।",
-    img: "https://placehold.co/1200x800/9c27b0/fff?text=Music",
+    img: "assets/Food 1.JPG",
     theme: { accent: "#ba68c8" },
     audio: "assets/audio_music.mp3",
     polaroids: [
