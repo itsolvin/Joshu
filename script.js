@@ -31,7 +31,7 @@ const memories = [
     desc: "खुला सडक र हाम्रो यात्रा... हरेक मोडमा नयाँ कहानी।",
     img: "assets/Roadtrip.jpeg",
     theme: { accent: "#e74c3c" },
-    audio: "assets/Roadtrip.mp3",
+    audio: "assets/trip.mp3",
     polaroids: [
       {
         img: "assets/Hetauda a.JPG",
@@ -54,7 +54,7 @@ const memories = [
     desc: "तातो कफी र तिम्रा मीठा कुराहरू। समय नै रोकिन्थ्यो।",
     img: "assets/Date.JPG",
     theme: { accent: "#a1887f" },
-    audio: "assets/Dates.mp3",
+    audio: "assets/datess.mp3",
     polaroids: [
       {
         img: "assets/First day.JPG",
@@ -109,7 +109,7 @@ const memories = [
     desc: "घामको किरण र तिम्रो साथ। सुनौलो दिनहरू।",
     img: "assets/Life.JPG",
     theme: { accent: "#C1CCB8" },
-    audio: "assets/audio_summer.mp3",
+    audio: "assets/Lifetogether.mp3",
     polaroids: [
       {
         img: "assets/Sunrise 2.JPG",
@@ -132,7 +132,7 @@ const memories = [
     desc: "केही नबोली पनि धेरै कुरा हुने पलहरू।",
     img: "assets/Quiet.JPG",
     theme: { accent: "#90a4ae" },
-    audio: "assets/quiet.mp3",
+    audio: "assets/quite.mp3",
     polaroids: [
       {
         img: "https://placehold.co/400x400/607d8b/fff?text=Book",
@@ -151,7 +151,7 @@ const memories = [
     desc: "धूनमा हराएको त्यो साँझ।",
     img: "assets/Food 1.JPG",
     theme: { accent: "#ba68c8" },
-    audio: "assets/audio_music.mp3",
+    audio: "assets/Food.mp3",
     polaroids: [
       {
         img: "https://placehold.co/400x400/9c27b0/fff?text=Guitar",
