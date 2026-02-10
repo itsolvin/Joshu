@@ -195,11 +195,15 @@ class AudioManager {
   play(src, trackName) {
     if (src === this.currentSrc) return;
 
-    const fadeOutInterval = setInterval(() => {
+    // Clear any pending fades
+    if (this.fadeInterval) clearInterval(this.fadeInterval);
+
+    this.fadeInterval = setInterval(() => {
+      // Safe fade out
       if (this.audio.volume > 0.05) {
-        this.audio.volume -= 0.1;
+        this.audio.volume = Math.max(0, this.audio.volume - 0.1);
       } else {
-        clearInterval(fadeOutInterval);
+        clearInterval(this.fadeInterval);
         this.audio.pause();
 
         this.audio.src = src;
@@ -211,7 +215,7 @@ class AudioManager {
           this.fadeIn();
         }
       }
-    }, 30);
+    }, 50);
   }
 
   resume() {
@@ -236,12 +240,15 @@ class AudioManager {
   }
 
   fadeIn() {
-    const fadeIn = setInterval(() => {
+    if (this.fadeInterval) clearInterval(this.fadeInterval);
+
+    this.fadeInterval = setInterval(() => {
+      // Targeted volume is `this.volume` (master volume)
       if (this.audio.volume < this.volume - 0.05) {
-        this.audio.volume += 0.05;
+        this.audio.volume = Math.min(this.volume, this.audio.volume + 0.05);
       } else {
         this.audio.volume = this.volume;
-        clearInterval(fadeIn);
+        clearInterval(this.fadeInterval);
       }
     }, 50);
   }
