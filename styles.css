@@ -277,14 +277,15 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .sprocket-holes-left,
 .sprocket-holes-right {
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   width: 15px;
   background-image: radial-gradient(#000 40%, transparent 41%);
   background-size: 15px 25px;
-  opacity: 0.5;
+  z-index: 2;
   pointer-events: none;
+  /* Let clicks pass through */
 }
 
 .sprocket-holes-left {
@@ -292,7 +293,7 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .sprocket-holes-right {
-  right: 10px;
+  left: 295px;
 }
 
 /* RIGHT PANEL */
