@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
     item.innerHTML = `
             <div class="film-frame"><img src="${mem.img}" alt="Thumb"></div>
             <div class="film-meta">
-                <span class="playing-dot"></span>
+                <span class="playing-dot" style="background: ${mem.theme.accent}; box-shadow: 0 0 5px ${mem.theme.accent};"></span>
                 <span>${mem.id}</span>
             </div>
         `;
@@ -349,6 +349,17 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     audioMgr.play(mem.audio, mem.title);
+
+    // VISUAL UPDATE: Exclusive Playing Dot
+    // We compare strictly by ID to ensure only ONE item has the dot
+    document.querySelectorAll(".film-item").forEach((item) => {
+      // Use String() to ensure safe comparison regardless of type
+      if (String(item.dataset.id) === String(mem.id)) {
+        item.classList.add("playing");
+      } else {
+        item.classList.remove("playing");
+      }
+    });
 
     const oldImgs = stageBg.querySelectorAll("img");
     oldImgs.forEach((img) => img.remove());

@@ -237,8 +237,11 @@ input[type="range"]::-moz-range-thumb:hover {
   display: none;
 }
 
-.film-item.active .playing-dot {
+/* Show Dot ONLY if strictly Playing */
+.film-item.playing .playing-dot {
   display: inline-block;
+  opacity: 1;
+  animation: flash 1s infinite;
 }
 
 .film-frame {
