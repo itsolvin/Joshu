@@ -1275,13 +1275,41 @@ input[type="range"]::-moz-range-thumb:hover {
   transition: all 0.2s ease;
 }
 
-.film-item:hover .delete-mem-btn-strip {
+.edit-mem-btn-strip {
+  position: absolute;
+  top: 5px;
+  right: 32px;
+  width: 24px;
+  height: 24px;
+  background: #3498db;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 200;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+}
+
+.film-item:hover .delete-mem-btn-strip,
+.film-item:hover .edit-mem-btn-strip {
   opacity: 1;
   transform: scale(1);
 }
 
 .delete-mem-btn-strip:hover {
   background: #ff4444;
+  transform: scale(1.1) !important;
+}
+
+.edit-mem-btn-strip:hover {
+  background: #2980b9;
   transform: scale(1.1) !important;
 }
 

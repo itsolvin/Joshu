@@ -494,6 +494,223 @@
       </div>
     </div>
 
+    <!-- EDIT MEMORY MODAL (Cloned & Modified) -->
+    <div id="editMemoryModal" class="modal">
+      <div
+        class="modal-content"
+        style="width: 90%; max-width: 400px; text-align: left"
+      >
+        <span class="close-modal" id="closeEditModal">&times;</span>
+        <h2 style="text-align: center; margin-bottom: 20px">Edit Memory</h2>
+        <input type="hidden" id="editMemId" />
+
+        <label for="editMemTitle" style="color: #aaa; font-size: 0.9em"
+          >Title</label
+        >
+        <input type="text" id="editMemTitle" placeholder="Memory Title" />
+
+        <label for="editMemDate" style="color: #aaa; font-size: 0.9em"
+          >Date</label
+        >
+        <input type="text" id="editMemDate" placeholder="Date" />
+
+        <label for="editMemDesc" style="color: #aaa; font-size: 0.9em"
+          >Description</label
+        >
+        <textarea
+          id="editMemDesc"
+          rows="3"
+          placeholder="Description..."
+          style="
+            width: 100%;
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0 15px;
+            font-family: inherit;
+            resize: vertical;
+          "
+        ></textarea>
+
+        <!-- Theme Color UI -->
+        <label
+          style="
+            color: #aaa;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 8px;
+          "
+          >Theme Color</label
+        >
+        <div
+          class="color-picker-container edit-color-container"
+          style="display: flex; gap: 10px; margin-bottom: 20px"
+        >
+          <div
+            class="color-option edit-color-option"
+            data-value="#d13030"
+            style="background: #d13030"
+          ></div>
+          <div
+            class="color-option edit-color-option"
+            data-value="#2ecc71"
+            style="background: #2ecc71"
+          ></div>
+          <div
+            class="color-option edit-color-option"
+            data-value="#3498db"
+            style="background: #3498db"
+          ></div>
+          <div
+            class="color-option edit-color-option"
+            data-value="#9b59b6"
+            style="background: #9b59b6"
+          ></div>
+          <div
+            class="color-option edit-color-option"
+            data-value="#f1c40f"
+            style="background: #f1c40f"
+          ></div>
+          <div
+            class="color-option edit-color-option custom-trigger"
+            style="
+              background: linear-gradient(45deg, red, blue);
+              position: relative;
+            "
+          >
+            <input
+              type="color"
+              id="editMemColor"
+              style="
+                opacity: 0;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Music Selection UI -->
+        <label
+          style="
+            color: #aaa;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 8px;
+          "
+          >Background Music</label
+        >
+        <div
+          class="music-selection-container"
+          style="
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+          "
+        >
+          <div
+            class="custom-select-wrapper"
+            style="position: relative; margin-bottom: 12px"
+          >
+            <select
+              id="editMemAudio"
+              style="
+                width: 100%;
+                background: #000;
+                color: #fff;
+                border: 1px solid #444;
+                padding: 10px 15px;
+                border-radius: 6px;
+                appearance: none;
+                cursor: pointer;
+              "
+            >
+              <option value="assets/audio/sparkle.mp3">
+                Sparkle (Default)
+              </option>
+              <option value="assets/Lifetogether.mp3">Life Together</option>
+              <option value="assets/Quite.mp3">Quiet Days</option>
+              <option value="assets/Food.mp3">Food</option>
+              <option value="assets/Trip.mp3">Trip</option>
+              <option value="assets/datess.mp3">Datess</option>
+              <option value="assets/Roadtrip.mp3">Roadtrip</option>
+            </select>
+            <div
+              style="
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none;
+                color: #aaa;
+              "
+            >
+              ▼
+            </div>
+          </div>
+          <div
+            style="
+              text-align: center;
+              font-size: 0.8em;
+              color: #555;
+              margin: 8px 0;
+            "
+          >
+            — OR —
+          </div>
+          <div class="file-upload-wrapper" style="text-align: center">
+            <label
+              for="editMemAudioFile"
+              class="custom-file-label"
+              style="
+                display: inline-block;
+                background: #333;
+                color: #fff;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.85em;
+                cursor: pointer;
+                transition: background 0.2s;
+                border: 1px solid #444;
+              "
+            >
+              🎵 Change MP3
+            </label>
+            <input
+              type="file"
+              id="editMemAudioFile"
+              accept="audio/mpeg, audio/mp3, audio/*"
+              style="display: none"
+            />
+            <div
+              id="editAudioFileName"
+              style="
+                margin-top: 5px;
+                font-size: 0.8em;
+                color: #aaa;
+                font-style: italic;
+              "
+            >
+              No new file
+            </div>
+          </div>
+        </div>
+
+        <button
+          id="saveMemChangesBtn"
+          style="margin-top: 10px; background: #000"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+
     <script type="module" src="script.js"></script>
   </body>
 </html>

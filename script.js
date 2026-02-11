@@ -3,6 +3,7 @@ import {
   getDatabase,
   ref,
   set,
+  update,
   remove,
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -318,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="playing-dot" style="background: ${mem.theme.accent}; box-shadow: 0 0 5px ${mem.theme.accent};"></span>
                 <span>${mem.title}</span>
             </div>
-            ${isAdmin ? `<button class="delete-mem-btn-strip" data-id="${mem.id}" title="Delete Memory">×</button>` : ""}
+            ${isAdmin ? `<button class="edit-mem-btn-strip" data-id="${mem.id}" title="Edit Memory">✎</button><button class="delete-mem-btn-strip" data-id="${mem.id}" title="Delete Memory">×</button>` : ""}
         `;
 
       // Handle Delete Click (must be attached before the item click to prevent bubbling issues if handled poorly)
@@ -336,6 +337,13 @@ document.addEventListener("DOMContentLoaded", () => {
               if (isConfirmed) {
                 deleteMemory(mem.id);
               }
+            });
+          }
+          const editBtn = item.querySelector(".edit-mem-btn-strip");
+          if (editBtn) {
+            editBtn.addEventListener("click", (e) => {
+              e.stopPropagation(); // Prevent opening the memory
+              openEditModal(mem.id);
             });
           }
         }, 0);
@@ -1241,6 +1249,140 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear input so same file can be selected again if needed
       photoUpload.value = "";
     }
+  });
+
+  // --- EDIT MEMORY LOGIC ---
+  const editMemoryModal = document.getElementById("editMemoryModal");
+  const closeEditModal = document.getElementById("closeEditModal");
+  const saveMemChangesBtn = document.getElementById("saveMemChangesBtn");
+  const editMemIdInput = document.getElementById("editMemId");
+
+  const editMemTitleInput = document.getElementById("editMemTitle");
+  const editMemDateInput = document.getElementById("editMemDate");
+  const editMemDescInput = document.getElementById("editMemDesc");
+  const editMemAudioInput = document.getElementById("editMemAudio");
+  const editMemColorInput = document.getElementById("editMemColor");
+  const editMemAudioFileInput = document.getElementById("editMemAudioFile");
+
+  // Close Edit Modal
+  closeEditModal.addEventListener("click", () =>
+    editMemoryModal.classList.remove("active"),
+  );
+  window.addEventListener("click", (e) => {
+    if (e.target === editMemoryModal)
+      editMemoryModal.classList.remove("active");
+  });
+
+  // UI Listeners for Edit Modal (Color & File)
+  const editColorOptions = document.querySelectorAll(".edit-color-option");
+  editColorOptions.forEach((opt) => {
+    opt.addEventListener("click", (e) => {
+      if (opt.classList.contains("custom-trigger")) return;
+      editColorOptions.forEach((o) => o.classList.remove("selected"));
+      opt.classList.add("selected");
+      const val = opt.getAttribute("data-value");
+      if (val) editMemColorInput.value = val;
+    });
+  });
+
+  editMemColorInput.addEventListener("input", (e) => {
+    const customTrigger = document.querySelector(
+      ".edit-color-option.custom-trigger",
+    );
+    customTrigger.style.background = e.target.value;
+    editColorOptions.forEach((o) => o.classList.remove("selected"));
+    customTrigger.classList.add("selected");
+  });
+
+  editMemAudioFileInput.addEventListener("change", (e) => {
+    const fileName = e.target.files[0]
+      ? "🎵 " + e.target.files[0].name
+      : "No new file";
+    document.getElementById("editAudioFileName").textContent = fileName;
+  });
+
+  // Open Edit Modal Function
+  window.openEditModal = (memId) => {
+    const mem = allMemories.find((m) => m.id === memId);
+    if (!mem) return;
+
+    editMemIdInput.value = mem.id;
+    editMemTitleInput.value = mem.title;
+    editMemDateInput.value = mem.date;
+    editMemDescInput.value = mem.desc;
+
+    // Set Audio Dropdown if matches preset
+    editMemAudioInput.value = mem.audio;
+    // If custom audio (url), dropdown might not match, which is fine.
+
+    // Set Color
+    const currentColor = mem.theme.accent;
+    editMemColorInput.value = currentColor;
+
+    // Update UI selection
+    editColorOptions.forEach((o) => o.classList.remove("selected"));
+    let matched = false;
+    editColorOptions.forEach((o) => {
+      if (o.getAttribute("data-value") === currentColor) {
+        o.classList.add("selected");
+        matched = true;
+      }
+    });
+    if (!matched) {
+      // It's a custom color
+      const customTrigger = document.querySelector(
+        ".edit-color-option.custom-trigger",
+      );
+      customTrigger.style.background = currentColor;
+      customTrigger.classList.add("selected");
+    }
+
+    editMemoryModal.classList.add("active");
+  };
+
+  // Save Changes
+  saveMemChangesBtn.addEventListener("click", async () => {
+    const memId = editMemIdInput.value;
+    const mem = allMemories.find((m) => m.id === memId);
+    if (!mem) return;
+
+    saveMemChangesBtn.innerText = "Saving...";
+
+    let newAudioUrl = mem.audio;
+
+    // Check for new Audio Dropdown selection (if changed from current)
+    // Actually, we should just take the dropdown value unless a file is uploaded to override it.
+    newAudioUrl = editMemAudioInput.value;
+
+    // Check for new Audio File
+    if (editMemAudioFileInput.files[0]) {
+      showToast("Uploading new audio...", "info");
+      const uploaded = await uploadToCloudinary(
+        editMemAudioFileInput.files[0],
+        "video",
+      );
+      if (uploaded) newAudioUrl = uploaded;
+    }
+
+    const updates = {
+      title: editMemTitleInput.value,
+      date: editMemDateInput.value,
+      desc: editMemDescInput.value,
+      audio: newAudioUrl,
+      theme: { accent: editMemColorInput.value },
+    };
+
+    try {
+      await update(ref(db, `memories/${memId}`), updates);
+
+      showToast("Memory updated! ✨", "success");
+      editMemoryModal.classList.remove("active");
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to update memory.", "error");
+    }
+
+    saveMemChangesBtn.innerText = "Save Changes";
   });
 
   // Helper to re-render polaroids (e.g. after adding one)
