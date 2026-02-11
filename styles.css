@@ -993,6 +993,56 @@ input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.1);
 }
 
+/* --- NEW MODAL UI ENHANCEMENTS --- */
+.color-picker-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  justify-content: center;
+  /* Center them */
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #fff;
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 4px 8px rgba(0, 0, 0, 0.5);
+  /* Double ring effect */
+}
+
+/* Custom Select Arrow Fix */
+.custom-select-wrapper select {
+  cursor: pointer;
+}
+
+.custom-select-wrapper select:focus {
+  outline: none;
+  border-color: #666;
+}
+
+/* File Upload Button Hover */
+.custom-file-label:hover {
+  background: #444 !important;
+  transform: translateY(-1px);
+}
+
 /* --- MODAL BUTTONS --- */
 .modal-content button {
   background-color: #d13030;

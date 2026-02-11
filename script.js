@@ -1044,9 +1044,58 @@ document.addEventListener("DOMContentLoaded", () => {
     newMemColorInput.value = "#d13030"; // Reset color
     newMemAudioFileInput.value = ""; // Reset file
 
+    // Reset UI Elements
+    document
+      .querySelectorAll(".color-option")
+      .forEach((o) => o.classList.remove("selected"));
+    document
+      .querySelector('.color-option[data-value="#d13030"]')
+      .classList.add("selected");
+    document.getElementById("audioFileName").textContent = "No file chosen";
+
     // Show Modal
     createMemoryModal.classList.add("active");
     console.log("Modal active class added");
+  });
+
+  // --- NEW UI LISTENERS ---
+  const colorOptions = document.querySelectorAll(".color-option");
+
+  colorOptions.forEach((opt) => {
+    opt.addEventListener("click", (e) => {
+      // If clicking the Custom Input (which matches .color-option), don't force select yet
+      // let the input change handle it.
+      if (opt.classList.contains("custom-trigger")) return;
+
+      // Remove selected from all
+      colorOptions.forEach((o) => o.classList.remove("selected"));
+      opt.classList.add("selected");
+
+      const val = opt.getAttribute("data-value");
+      if (val) {
+        newMemColorInput.value = val;
+      }
+    });
+  });
+
+  // Handle Custom Color Input Change
+  newMemColorInput.addEventListener("input", (e) => {
+    const customTrigger = document.querySelector(
+      ".color-option.custom-trigger",
+    );
+    customTrigger.style.background = e.target.value;
+
+    // Select it
+    colorOptions.forEach((o) => o.classList.remove("selected"));
+    customTrigger.classList.add("selected");
+  });
+
+  // Handle File Input Change
+  newMemAudioFileInput.addEventListener("change", (e) => {
+    const fileName = e.target.files[0]
+      ? "🎵 " + e.target.files[0].name
+      : "No file chosen";
+    document.getElementById("audioFileName").textContent = fileName;
   });
 
   // Handle "Select Photo & Create" Click inside Modal
