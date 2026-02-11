@@ -838,7 +838,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- ADMIN & UPLOAD LOGIC ---
 
   // 1. Cloudinary Upload
-  async function uploadToCloudinary(file) {
+  async function uploadToCloudinary(file, resourceType = "image") {
     const CLOUD_NAME = "dvrfewksi";
     const UPLOAD_PRESET = "Joshuu"; // Ensure this is "Unsigned" in Cloudinary settings
 
@@ -848,7 +848,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`,
         {
           method: "POST",
           body: formData,
@@ -865,7 +865,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return data.secure_url;
     } catch (error) {
       console.error("Cloudinary Upload Error:", error);
-      alert("Failed to upload image. Please try again.");
+      showToast("Failed to upload media. Please try again.", "error"); // Use toast
       return null;
     }
   }
@@ -1013,6 +1013,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const newMemDateInput = document.getElementById("newMemDate");
   const newMemDescInput = document.getElementById("newMemDesc");
   const newMemAudioInput = document.getElementById("newMemAudio");
+  const newMemColorInput = document.getElementById("newMemColor");
+  const newMemAudioFileInput = document.getElementById("newMemAudioFile");
 
   // Temporary storage for new memory details
   let tempMemoryDetails = {};
@@ -1039,6 +1041,8 @@ document.addEventListener("DOMContentLoaded", () => {
     newMemDateInput.value = "";
     newMemDescInput.value = "";
     newMemAudioInput.selectedIndex = 0;
+    newMemColorInput.value = "#d13030"; // Reset color
+    newMemAudioFileInput.value = ""; // Reset file
 
     // Show Modal
     createMemoryModal.classList.add("active");
@@ -1059,9 +1063,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const desc =
       newMemDescInput.value || "A beautiful moment captured in time.";
     const audio = newMemAudioInput.value;
+    const themeColor = newMemColorInput.value;
+    const audioFile = newMemAudioFileInput.files[0];
 
     // 2. Store in temp object
-    tempMemoryDetails = { title, date, desc, audio };
+    tempMemoryDetails = { title, date, desc, audio, themeColor, audioFile };
 
     // 3. Trigger File Upload
     createMemoryModal.classList.remove("active"); // Hide modal
@@ -1112,6 +1118,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (imageUrl) {
         if (!isAddingPolaroid) {
           // --- SCENARIO A: CREATE NEW MEMORY (Enhanced) ---
+          let finalAudioUrl =
+            tempMemoryDetails.audio || "assets/audio/sparkle.mp3";
+
+          // Check for custom audio upload
+          if (tempMemoryDetails.audioFile) {
+            showToast("Uploading custom audio... 🎵", "info");
+            const uploadedAudio = await uploadToCloudinary(
+              tempMemoryDetails.audioFile,
+              "video",
+            );
+            if (uploadedAudio) {
+              finalAudioUrl = uploadedAudio;
+            } else {
+              showToast("Audio upload failed. Using preset.", "error");
+            }
+          }
+
           const newMemory = {
             id: "mem_" + Date.now(),
             title: tempMemoryDetails.title || "New Memory", // Fallback
@@ -1124,8 +1147,8 @@ document.addEventListener("DOMContentLoaded", () => {
             desc:
               tempMemoryDetails.desc || "A beautiful moment captured in time.",
             img: imageUrl,
-            audio: tempMemoryDetails.audio || "assets/audio/sparkle.mp3",
-            theme: { accent: "#ffffff" }, // Future: Add color picker to modal?
+            audio: finalAudioUrl,
+            theme: { accent: tempMemoryDetails.themeColor || "#d13030" },
             polaroids: [],
           };
           await saveMemoryToDB(newMemory);

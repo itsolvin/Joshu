@@ -254,29 +254,86 @@
           "
         ></textarea>
 
-        <label for="newMemAudio" style="color: #aaa; font-size: 0.9em"
-          >Music</label
+        <!-- New: Theme Color -->
+        <label style="color: #aaa; font-size: 0.9em; display: block"
+          >Theme Color</label
         >
-        <select
-          id="newMemAudio"
+        <div
           style="
-            width: 100%;
-            background: #2a2a2a;
-            color: #fff;
-            border: 1px solid #333;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 5px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
           "
         >
-          <option value="assets/audio/sparkle.mp3">Sparkle (Default)</option>
-          <option value="assets/Lifetogether.mp3">Life Together</option>
-          <option value="assets/Quite.mp3">Quiet Days</option>
-          <option value="assets/Food.mp3">Food</option>
-          <option value="assets/Trip.mp3">Trip</option>
-          <option value="assets/datess.mp3">Datess</option>
-          <option value="assets/Roadtrip.mp3">Roadtrip</option>
-        </select>
+          <input
+            type="color"
+            id="newMemColor"
+            value="#d13030"
+            style="
+              border: none;
+              width: 50px;
+              height: 30px;
+              padding: 0;
+              background: none;
+              cursor: pointer;
+            "
+          />
+          <span style="font-size: 0.8em; color: #666"
+            >Set album brand color</span
+          >
+        </div>
+
+        <!-- New: Enhanced Music Selection -->
+        <label style="color: #aaa; font-size: 0.9em; display: block"
+          >Background Music</label
+        >
+        <div
+          style="
+            background: #222;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+          "
+        >
+          <select
+            id="newMemAudio"
+            style="
+              width: 100%;
+              background: #000;
+              color: #fff;
+              border: 1px solid #444;
+              padding: 8px;
+              border-radius: 4px;
+              margin-bottom: 10px;
+            "
+          >
+            <option value="assets/audio/sparkle.mp3">Sparkle (Default)</option>
+            <option value="assets/Lifetogether.mp3">Life Together</option>
+            <option value="assets/Quite.mp3">Quiet Days</option>
+            <option value="assets/Food.mp3">Food</option>
+            <option value="assets/Trip.mp3">Trip</option>
+            <option value="assets/datess.mp3">Datess</option>
+            <option value="assets/Roadtrip.mp3">Roadtrip</option>
+          </select>
+          <div
+            style="
+              text-align: center;
+              font-size: 0.8em;
+              color: #666;
+              margin: 5px 0;
+            "
+          >
+            — OR —
+          </div>
+          <input
+            type="file"
+            id="newMemAudioFile"
+            accept="audio/mpeg, audio/mp3, audio/*"
+            style="width: 100%; font-size: 0.9em; color: #ccc"
+          />
+        </div>
 
         <button id="createMemBtn" style="margin-top: 10px; background: #000">
           Select Photo & Create
