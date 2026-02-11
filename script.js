@@ -979,9 +979,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 2. Login Action
-  loginSubmitBtn.addEventListener("click", async () => {
+  const loginForm = document.getElementById("loginForm");
+
+  async function doLogin() {
     const email = adminEmail.value;
     const pass = adminPass.value;
+    if (!email || !pass) return;
+
+    // Show loader
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.innerHTML =
+      '<span class="btn-spinner"></span> Logging in...';
 
     try {
       await signInWithEmailAndPassword(auth, email, pass);
@@ -990,6 +998,29 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Login Failed:", error.code, error.message);
       showToast("Login failed. Check email/password.", "error");
+    } finally {
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.innerHTML = "Login";
+    }
+  }
+
+  // Handle form submit (click on button)
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    doLogin();
+  });
+
+  // Direct Enter key handler as fallback
+  adminPass.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      doLogin();
+    }
+  });
+  adminEmail.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      doLogin();
     }
   });
 

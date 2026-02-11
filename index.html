@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Gotu&family=Lora:ital,wght@0,400;0,600;1,400&family=Oswald:wght@300;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Gotu&family=Lora:ital,wght@0,400;0,600;1,400&family=Oswald:wght@300;500&family=Poppins:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -205,9 +205,11 @@
       <div class="modal-content">
         <span class="close-modal">&times;</span>
         <h2>Admin Login</h2>
-        <input type="email" id="adminEmail" placeholder="Email" />
-        <input type="password" id="adminPass" placeholder="Password" />
-        <button id="loginSubmitBtn">Login</button>
+        <form id="loginForm">
+          <input type="email" id="adminEmail" placeholder="Email" />
+          <input type="password" id="adminPass" placeholder="Password" />
+          <button type="submit" id="loginSubmitBtn">Login</button>
+        </form>
       </div>
     </div>
 

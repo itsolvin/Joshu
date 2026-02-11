@@ -10,6 +10,7 @@
   --font-display: "Anton", sans-serif;
   --font-heading: "Oswald", sans-serif;
   --font-body: "Gotu", serif;
+  --font-elegant: "Poppins", sans-serif;
   /* Nepali friendly */
 }
 
@@ -1053,15 +1054,40 @@ input[type="range"]::-moz-range-thumb:hover {
   border-radius: 4px;
   cursor: pointer;
   width: 100%;
-  font-family: var(--font-heading);
+  font-family: var(--font-elegant);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
 }
 
 .modal-content button:hover {
   background-color: #ff4444;
   transform: translateY(-2px);
+}
+
+.modal-content button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .add-photo-btn {
@@ -1148,8 +1174,10 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .modal-content h2 {
   margin-bottom: 20px;
-  font-family: var(--font-heading);
-  letter-spacing: 1px;
+  font-family: var(--font-elegant);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 1.3rem;
 }
 
 .modal-content input {
@@ -1162,6 +1190,8 @@ input[type="range"]::-moz-range-thumb:hover {
   box-sizing: border-box;
   background: #2a2a2a;
   color: #fff;
+  font-family: var(--font-elegant);
+  font-size: 0.9rem;
 }
 
 .add-polaroid-btn {
@@ -1367,7 +1397,7 @@ input[type="range"]::-moz-range-thumb:hover {
   padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  font-family: var(--font-heading);
+  font-family: var(--font-elegant);
   font-size: 0.9rem;
   display: flex;
   align-items: center;
