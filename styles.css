@@ -974,7 +974,9 @@ input[type="range"]::-moz-range-thumb:hover {
   width: 40px;
   height: 40px;
   background: rgba(255, 255, 255, 0.1);
+  /* Reverted */
   border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Reverted */
   border-radius: 50%;
   color: #fff;
   cursor: pointer;
@@ -987,7 +989,29 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .login-trigger:hover {
   background: rgba(255, 255, 255, 0.2);
+  /* Reverted */
   transform: scale(1.1);
+}
+
+/* --- MODAL BUTTONS --- */
+.modal-content button {
+  background-color: #d13030;
+  color: white;
+  padding: 12px 20px;
+  margin: 15px 0 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+  background-color: #ff4444;
+  transform: translateY(-2px);
 }
 
 .add-photo-btn {
@@ -1090,21 +1114,6 @@ input[type="range"]::-moz-range-thumb:hover {
   color: #fff;
 }
 
-.modal-content button {
-  background-color: var(--theme-accent);
-  color: white;
-  padding: 12px 20px;
-  margin: 15px 0 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-  font-family: var(--font-heading);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: opacity 0.2s;
-}
-
 .add-polaroid-btn {
   position: fixed;
   top: 20px;
@@ -1123,14 +1132,52 @@ input[type="range"]::-moz-range-thumb:hover {
   transition: all 0.3s ease;
 }
 
+.add-album-floating-btn {
+  position: fixed;
+  bottom: 0px;
+  left: 160px;
+  transform: translateX(-50%);
+  background: #d13030;
+  /* Theme accent or distinct color */
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  z-index: 2010;
+  /* Above film strip content */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  bottom: 30px;
+}
+
+.add-album-floating-btn:hover {
+  background: #ff4444;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.add-photo-btn {
+  /* Deprecated but kept for reference if needed, or I can remove */
+  display: none !important;
+}
+
 .add-polaroid-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .logout-btn {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  /* Match add-photo-btn */
+  height: 50px;
+  /* Match add-photo-btn */
   background: #333;
   border: 1px solid #555;
   border-radius: 50%;
@@ -1141,7 +1188,8 @@ input[type="range"]::-moz-range-thumb:hover {
   justify-content: center;
   backdrop-filter: blur(5px);
   transition: all 0.3s ease;
-  margin-left: 10px;
+  margin-left: 0;
+  /* Fix alignment */
 }
 
 .logout-btn:hover {
