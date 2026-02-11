@@ -6,6 +6,12 @@ import {
   remove,
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // --- FIREBASE CONFIGURATION ---
 // TODO: User must replace these with their own project keys
@@ -894,15 +900,43 @@ document.addEventListener("DOMContentLoaded", () => {
   let isAdmin = false;
   let isAddingPolaroid = false;
 
-  // Check LocalStorage for persistent login
-  const logoutBtn = document.getElementById("logoutBtn");
+  // --- AUTHENTICATION LOGIC ---
+  const auth = getAuth(app);
 
-  if (localStorage.getItem("adminLoggedIn") === "true") {
-    isAdmin = true;
-    authBtn.style.display = "none";
-    addPhotoBtn.style.display = "flex";
-    logoutBtn.style.display = "flex";
-  }
+  // 1. Auth State Listener (Manages UI automatically)
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in
+      isAdmin = true;
+      authBtn.style.display = "none";
+      addPhotoBtn.style.display = "flex";
+      logoutBtn.style.display = "flex";
+
+      // If currently in fullscreen, show the polaroid button AND RE-RENDER
+      if (isFullscreen) {
+        addPolaroidBtn.style.display = "block";
+        const currentMem = memories.find((m) => m.id === activeMemoryId);
+        if (currentMem) {
+          openFullscreen(currentMem); // Re-render to show delete buttons
+        }
+      }
+      renderFilmStrip(); // Re-render to show delete buttons on strip
+    } else {
+      // User is signed out
+      isAdmin = false;
+      authBtn.style.display = "flex";
+      addPhotoBtn.style.display = "none";
+      logoutBtn.style.display = "none";
+      addPolaroidBtn.style.display = "none";
+
+      // Re-render to hide delete buttons
+      if (isFullscreen) {
+        const currentMem = memories.find((m) => m.id === activeMemoryId);
+        if (currentMem) openFullscreen(currentMem);
+      }
+      renderFilmStrip();
+    }
+  });
 
   // Show Modal
   authBtn.addEventListener("click", () => {
@@ -920,60 +954,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Login Check
-  loginSubmitBtn.addEventListener("click", () => {
+  // 2. Login Action
+  loginSubmitBtn.addEventListener("click", async () => {
     const email = adminEmail.value;
     const pass = adminPass.value;
 
-    // Hardcoded credentials (for now)
-    if (email === "joshu@gmail.com" && pass === "joshu123") {
-      // Success
-      isAdmin = true;
-      localStorage.setItem("adminLoggedIn", "true"); // Persist login
-
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
       loginModal.classList.remove("active");
-      authBtn.style.display = "none";
-      addPhotoBtn.style.display = "flex"; // Show main + button
-      logoutBtn.style.display = "flex"; // Show logout button
-
-      showToast("Welcome back, Joshu! 💖", "success");
-
-      // If currently in fullscreen, show the polaroid button AND RE-RENDER
-      if (isFullscreen) {
-        addPolaroidBtn.style.display = "block";
-        const currentMem = memories.find((m) => m.id === activeMemoryId);
-        if (currentMem) {
-          openFullscreen(currentMem); // Re-render to show delete buttons
-        }
-      }
-
-      // Also re-render film strip to show memory delete buttons
-      renderFilmStrip();
-    } else {
-      showToast("Incorrect password! Try again.", "error");
+      showToast("Welcome back! 💖", "success");
+    } catch (error) {
+      console.error("Login Failed:", error.code, error.message);
+      showToast("Login failed. Check email/password.", "error");
     }
   });
 
-  // Logout Logic
-  logoutBtn.addEventListener("click", () => {
-    // Clear Persistence
-    localStorage.removeItem("adminLoggedIn");
-    isAdmin = false;
-
-    // Update UI
-    authBtn.style.display = "flex";
-    addPhotoBtn.style.display = "none";
-    logoutBtn.style.display = "none";
-    addPolaroidBtn.style.display = "none";
-
-    showToast("Logged out successfully.", "success");
-
-    // Re-render to hide delete buttons
-    if (isFullscreen) {
-      const currentMem = memories.find((m) => m.id === activeMemoryId);
-      if (currentMem) openFullscreen(currentMem);
+  // 3. Logout Action
+  const logoutBtn = document.getElementById("logoutBtn"); // Ensure this is selected if not already
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      showToast("Logged out successfully.", "success");
+    } catch (error) {
+      console.error("Logout Error:", error);
     }
-    renderFilmStrip();
   });
 
   // --- TOAST NOTIFICATION SYSTEM ---
