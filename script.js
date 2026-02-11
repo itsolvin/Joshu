@@ -298,6 +298,12 @@ document.addEventListener("DOMContentLoaded", () => {
     { once: true },
   );
 
+  // --- IMAGE OPTIMIZATION HELPER ---
+  function optimizedUrl(url, width = 800) {
+    if (!url || !url.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", `/upload/w_${width},q_auto,f_auto,c_limit/`);
+  }
+
   // --- DATA LOADING & RENDERING ---
   const INITIAL_MEMORIES = [...memories]; // Keep a copy of static data
   let allMemories = [...INITIAL_MEMORIES];
@@ -314,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       item.dataset.id = mem.id;
       item.innerHTML = `
-            <div class="film-frame"><img src="${mem.img}" alt="Thumb"></div>
+            <div class="film-frame"><img src="${optimizedUrl(mem.img, 200)}" alt="Thumb" loading="lazy"></div>
             <div class="film-meta">
                 <span class="playing-dot" style="background: ${mem.theme.accent}; box-shadow: 0 0 5px ${mem.theme.accent};"></span>
                 <span>${mem.title}</span>
@@ -449,7 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
     oldImgs.forEach((img) => img.remove());
 
     const newImg = document.createElement("img");
-    newImg.src = mem.img;
+    newImg.src = optimizedUrl(mem.img, 800);
     newImg.onload = () => {
       stageBg.appendChild(newImg);
       setTimeout(() => newImg.classList.add("active"), 50);
@@ -555,7 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         card.innerHTML = `
              <div class="pin" style="display:none;"></div>
-             <img src="${imgSrc}" alt="Mem" draggable="false">
+             <img src="${optimizedUrl(imgSrc, 1000)}" alt="Mem" draggable="false" loading="lazy">
              <p class="fs-caption">${p.caption}</p>
           `;
 
@@ -1433,7 +1439,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         card.innerHTML = `
                  <div class="pin" style="display:none;"></div>
-                 <img src="${imgSrc}" alt="Mem" draggable="false">
+                 <img src="${optimizedUrl(imgSrc, 1000)}" alt="Mem" draggable="false" loading="lazy">
                  <p class="fs-caption">${p.caption}</p>
             `;
 
