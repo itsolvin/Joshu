@@ -426,15 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
     previewMemory(currentMem, false); // Update UI
   });
 
-  // Enable fullscreen on mobile by tapping the stage content
-  if (window.innerWidth <= 430) {
-    stageContent.addEventListener("click", () => {
-      const activeMem = memories.find((m) => m.id === activeMemoryId);
-      if (activeMem) {
-        openFullscreen(activeMem);
-      }
-    });
-  }
+  // Stage click to open disabled — users navigate via film strip
 
   previewMemory(memories[0], true);
 

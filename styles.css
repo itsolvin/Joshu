@@ -304,7 +304,7 @@ input[type="range"]::-moz-range-thumb:hover {
   display: flex;
   align-items: center;
   padding-left: 10%;
-  cursor: zoom-in;
+  cursor: default;
 }
 
 .stage-bg-layer,
