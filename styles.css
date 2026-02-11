@@ -1386,11 +1386,30 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .toast.success {
-  border-left: 4px solid #4caf50;
+  background: linear-gradient(
+    135deg,
+    rgba(56, 142, 60, 0.9),
+    rgba(76, 175, 80, 0.85)
+  );
+  border-left: none;
 }
 
 .toast.error {
-  border-left: 4px solid #f44336;
+  background: linear-gradient(
+    135deg,
+    rgba(198, 40, 40, 0.9),
+    rgba(239, 83, 80, 0.85)
+  );
+  border-left: none;
+}
+
+.toast.info {
+  background: linear-gradient(
+    135deg,
+    rgba(21, 101, 192, 0.9),
+    rgba(66, 165, 245, 0.85)
+  );
+  border-left: none;
 }
 
 .toast-icon {

@@ -390,11 +390,21 @@ document.addEventListener("DOMContentLoaded", () => {
   onValue(memoriesRef, (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      // Convert object to array
       const dynamicMemories = Object.values(data);
-      // Merge: Static + Dynamic (avoid duplicates if we decide to save static to DB later)
-      // For now, simple concatenation.
-      allMemories = [...INITIAL_MEMORIES, ...dynamicMemories];
+      const dynamicMap = new Map(dynamicMemories.map((m) => [String(m.id), m]));
+
+      // Preserve original order: use Firebase version if it exists, else static
+      const ordered = INITIAL_MEMORIES.map(
+        (m) => dynamicMap.get(String(m.id)) || m,
+      );
+
+      // Append any new memories created via the app (not in INITIAL_MEMORIES)
+      const initialIds = new Set(INITIAL_MEMORIES.map((m) => String(m.id)));
+      const newOnes = dynamicMemories.filter(
+        (m) => !initialIds.has(String(m.id)),
+      );
+
+      allMemories = [...ordered, ...newOnes];
     } else {
       allMemories = [...INITIAL_MEMORIES];
     }
