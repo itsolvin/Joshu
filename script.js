@@ -586,6 +586,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           };
           card.appendChild(delBtn);
+
+          const editBtn = document.createElement("div");
+          editBtn.className = "edit-photo-btn";
+          editBtn.innerHTML = "✎";
+          editBtn.title = "Edit Caption";
+          editBtn.onclick = async (e) => {
+            e.stopPropagation();
+            await editPolaroidCaption(mem, i);
+          };
+          card.appendChild(editBtn);
         }
       });
 
@@ -852,6 +862,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- ADMIN & UPLOAD LOGIC ---
+
+  // 0. Client-side Image Compression
+  function compressImage(file, maxWidth = 2000, quality = 0.85) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) =>
+            resolve(new File([blob], file.name, { type: "image/jpeg" })),
+          "image/jpeg",
+          quality,
+        );
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  }
 
   // 1. Cloudinary Upload
   async function uploadToCloudinary(file, resourceType = "image") {
@@ -1210,7 +1248,9 @@ document.addEventListener("DOMContentLoaded", () => {
         addPhotoBtn.disabled = true;
       }
 
-      const imageUrl = await uploadToCloudinary(file);
+      // Compress image before upload
+      const compressedFile = await compressImage(file);
+      const imageUrl = await uploadToCloudinary(compressedFile);
 
       if (imageUrl) {
         if (!isAddingPolaroid) {
@@ -1491,6 +1531,16 @@ document.addEventListener("DOMContentLoaded", () => {
             deletePolaroid(mem.id, i);
           };
           card.appendChild(delBtn);
+
+          const editBtn = document.createElement("div");
+          editBtn.className = "edit-photo-btn";
+          editBtn.innerHTML = "✎";
+          editBtn.title = "Edit Caption";
+          editBtn.onclick = async (e) => {
+            e.stopPropagation();
+            await editPolaroidCaption(mem, i);
+          };
+          card.appendChild(editBtn);
         }
       });
     }
@@ -1540,6 +1590,37 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error deleting photo:", error);
       showToast("Failed to delete photo.", "error");
+    }
+  }
+
+  async function editPolaroidCaption(mem, index) {
+    if (!mem || !mem.polaroids || !mem.polaroids[index]) return;
+
+    const currentCaption = mem.polaroids[index].caption || "";
+    const newCaption = await showPrompt(
+      "Edit Caption",
+      "Update the caption for this photo:",
+      currentCaption,
+    );
+
+    // If user cancelled (null) or didn't change anything, do nothing
+    if (newCaption === null || newCaption === currentCaption) return;
+
+    // Update locally
+    mem.polaroids[index].caption = newCaption;
+
+    // Save to Firebase
+    try {
+      await set(ref(db, `memories/${mem.id}/polaroids`), mem.polaroids);
+
+      // Refresh UI if in fullscreen
+      if (isFullscreen && activeMemoryId === mem.id) {
+        openFullscreen(mem);
+      }
+      showToast("Caption updated! ✏️", "success");
+    } catch (error) {
+      console.error("Error updating caption:", error);
+      showToast("Failed to update caption.", "error");
     }
   }
 
