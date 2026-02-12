@@ -29,30 +29,29 @@ body {
 }
 
 /* --- SCROLLBAR CUSTOMIZATION --- */
+/* Standard properties (Firefox + modern browsers — no desync) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Webkit fallback (Chrome/Safari) */
 ::-webkit-scrollbar {
-  width: 8px;
-  /* Width for vertical scrollbars */
-  height: 8px;
-  /* Height for horizontal scrollbars */
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
-  /* Dark track */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
-  /* Subtle light grey thumb */
-  border-radius: 4px;
-  /* Rounded corners */
-  border: 2px solid var(--bg-dark);
-  /* Padding effect */
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
-  /* Brighter on hover */
 }
 
 /* --- AUDIO PLAYER (Spotify Style) --- */

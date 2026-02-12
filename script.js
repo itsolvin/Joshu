@@ -1202,10 +1202,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ? addPolaroidBtn.innerHTML
         : addPhotoBtn.innerHTML;
       if (isAddingPolaroid) {
-        addPolaroidBtn.innerText = "⏳";
+        addPolaroidBtn.innerHTML =
+          '<span class="btn-spinner"></span> Uploading...';
         addPolaroidBtn.disabled = true;
       } else {
-        addPhotoBtn.innerHTML = "⏳";
+        addPhotoBtn.innerHTML = '<span class="btn-spinner"></span>';
         addPhotoBtn.disabled = true;
       }
 
