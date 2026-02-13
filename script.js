@@ -307,7 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function initSortable() {
     if (sortableInstance) sortableInstance.destroy();
     sortableInstance = new Sortable(filmTrack, {
-      animation: 200,
+      animation: 300,
+      easing: "cubic-bezier(0.25, 1, 0.5, 1)",
       ghostClass: "film-item-ghost",
       chosenClass: "film-item-chosen",
       dragClass: "film-item-drag",
@@ -1424,6 +1425,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const updates = {
+      id: memId,
       title: editMemTitleInput.value,
       date: editMemDateInput.value,
       desc: editMemDescInput.value,
