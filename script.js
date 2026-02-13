@@ -1425,6 +1425,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const updates = {
+      ...mem,
       id: memId,
       title: editMemTitleInput.value,
       date: editMemDateInput.value,
