@@ -40,20 +40,7 @@ const memories = [
     img: "assets/Roadtrip.jpeg",
     theme: { accent: "#e74c3c" },
     audio: "assets/Trip.mp3",
-    polaroids: [
-      {
-        img: "assets/Hetauda a.JPG",
-        caption: "हावाको स्पर्श",
-      },
-      {
-        img: "assets/Hetauda j.JPG",
-        caption: "नयाँ बाटो",
-      },
-      {
-        img: "https://placehold.co/400x400/8a4b4b/fff?text=Us",
-        caption: "हामी",
-      },
-    ],
+    polaroids: [],
   },
   {
     id: "dates",
@@ -63,52 +50,7 @@ const memories = [
     img: "assets/Date.JPG",
     theme: { accent: "#a1887f" },
     audio: "assets/datess.mp3",
-    polaroids: [
-      {
-        img: "assets/First day.JPG",
-        caption: "Cutie",
-      },
-      {
-        img: "assets/First full.JPG",
-        caption: "First Selfie",
-      },
-      {
-        img: "assets/Burger house.JPG",
-        caption: "Natak",
-      },
-      {
-        img: "assets/Late night movie.JPG",
-        caption: "Us",
-      },
-      {
-        img: "assets/Snap.JPG",
-        caption: "Hehe",
-      },
-      {
-        img: "assets/Mokshya.JPG",
-        caption: "Mokshya",
-      },
-      {
-        img: "assets/Pokhara.JPG",
-        caption: "Late night pokhara",
-      },
-      {
-        img: "assets/Snap.JPG",
-        caption: "First Selfie",
-      },
-      {
-        img: "assets/Snap.JPG",
-        caption: "First Selfie",
-      },
-      {
-        img: "assets/Snap.JPG",
-        caption: "First Selfie",
-      },
-      {
-        img: "assets/Snap.JPG",
-        caption: "First Selfie",
-      },
-    ],
+    polaroids: [],
   },
   {
     id: "Life Together",
@@ -118,20 +60,7 @@ const memories = [
     img: "assets/Life.JPG",
     theme: { accent: "#C1CCB8" },
     audio: "assets/Lifetogether.mp3",
-    polaroids: [
-      {
-        img: "assets/Sunrise 2.JPG",
-        caption: "रमाइलो",
-      },
-      {
-        img: "assets/Sunrise.JPG",
-        caption: "मिठो याद",
-      },
-      {
-        img: "assets/Life.JPG",
-        caption: "साँझपख",
-      },
-    ],
+    polaroids: [],
   },
   {
     id: "quiet",
@@ -141,16 +70,7 @@ const memories = [
     img: "assets/Quiet.JPG",
     theme: { accent: "#90a4ae" },
     audio: "assets/Quite.mp3",
-    polaroids: [
-      {
-        img: "https://placehold.co/400x400/607d8b/fff?text=Book",
-        caption: "किताब र तिमी",
-      },
-      {
-        img: "https://placehold.co/400x500/455a64/fff?text=Rain",
-        caption: "पानी पर्दा",
-      },
-    ],
+    polaroids: [],
   },
   {
     id: "Food",
@@ -160,16 +80,7 @@ const memories = [
     img: "assets/Food 1.JPG",
     theme: { accent: "#ba68c8" },
     audio: "assets/Food.mp3",
-    polaroids: [
-      {
-        img: "https://placehold.co/400x400/9c27b0/fff?text=Guitar",
-        caption: "गीत",
-      },
-      {
-        img: "https://placehold.co/400x500/7b1fa2/fff?text=Crowd",
-        caption: "रमाइलो भीड",
-      },
-    ],
+    polaroids: [],
   },
 ];
 
@@ -300,7 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- IMAGE OPTIMIZATION HELPER ---
   function optimizedUrl(url, width = 800) {
-    if (!url || !url.includes("res.cloudinary.com")) return url;
+    if (!url) return "";
+    if (!url.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", `/upload/w_${width},q_auto,f_auto,c_limit/`);
   }
 
@@ -322,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       item.innerHTML = `
             <div class="film-frame"><img src="${optimizedUrl(mem.img, 200)}" alt="Thumb" loading="lazy"></div>
             <div class="film-meta">
-                <span class="playing-dot" style="background: ${mem.theme.accent}; box-shadow: 0 0 5px ${mem.theme.accent};"></span>
+                <span class="playing-dot" style="background: ${(mem.theme && mem.theme.accent) || "#d13030"}; box-shadow: 0 0 5px ${(mem.theme && mem.theme.accent) || "#d13030"};"></span>
                 <span>${mem.title}</span>
             </div>
             ${isAdmin ? `<button class="edit-mem-btn-strip" data-id="${mem.id}" title="Edit Memory">✎</button><button class="delete-mem-btn-strip" data-id="${mem.id}" title="Delete Memory">×</button>` : ""}
@@ -866,6 +778,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 0. Client-side Image Compression
   function compressImage(file, maxWidth = 2000, quality = 0.85) {
     return new Promise((resolve) => {
+      // Skip compression for formats Canvas can't decode (HEIC/HEIF)
+      const name = file.name.toLowerCase();
+      if (name.endsWith(".heic") || name.endsWith(".heif")) {
+        // Return as-is — Cloudinary will convert it server-side
+        return resolve(file);
+      }
+
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
@@ -887,6 +806,7 @@ document.addEventListener("DOMContentLoaded", () => {
           quality,
         );
       };
+      img.onerror = () => resolve(file); // Fallback if decoding fails
       img.src = URL.createObjectURL(file);
     });
   }

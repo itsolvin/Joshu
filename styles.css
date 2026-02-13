@@ -553,9 +553,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .fs-polaroid.dragging {
   cursor: grabbing;
   box-shadow: 15px 30px 60px rgba(0, 0, 0, 0.3);
-  /* Big lift */
-  transform: scale(1.1) rotate(var(--rotation, 0deg)) !important;
-  /* Maintain rotation */
+  transform: scale(1.1) !important;
   z-index: 2000;
 }
 
@@ -578,9 +576,26 @@ input[type="range"]::-moz-range-thumb:hover {
   }
 }
 
-.fs-polaroid:hover {
-  /* Only hover effect when not dragging/active */
-  transform: scale(1.05) rotate(var(--rotation, 0deg));
+.fs-polaroid:nth-child(4n + 1):hover {
+  transform: scale(1.05) rotate(-4deg);
+  z-index: 100;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.fs-polaroid:nth-child(4n + 2):hover {
+  transform: scale(1.05) rotate(2deg);
+  z-index: 100;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.fs-polaroid:nth-child(4n + 3):hover {
+  transform: scale(1.05) rotate(-2deg);
+  z-index: 100;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.fs-polaroid:nth-child(4n + 4):hover {
+  transform: scale(1.05) rotate(5deg);
   z-index: 100;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
