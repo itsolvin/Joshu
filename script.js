@@ -313,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Append any new memories created via the app (not in INITIAL_MEMORIES)
       const initialIds = new Set(INITIAL_MEMORIES.map((m) => String(m.id)));
       const newOnes = dynamicMemories.filter(
-        (m) => !initialIds.has(String(m.id)),
+        (m) => !initialIds.has(String(m.id)) && m.id && m.title,
       );
 
       allMemories = [...ordered, ...newOnes];
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.documentElement.style.setProperty(
       "--theme-accent",
-      mem.theme.accent,
+      (mem.theme && mem.theme.accent) || "#d13030",
     );
 
     audioMgr.play(mem.audio, mem.title);
@@ -1316,7 +1316,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // If custom audio (url), dropdown might not match, which is fine.
 
     // Set Color
-    const currentColor = mem.theme.accent;
+    const currentColor = (mem.theme && mem.theme.accent) || "#d13030";
     editMemColorInput.value = currentColor;
 
     // Update UI selection
