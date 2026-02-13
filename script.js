@@ -3,6 +3,7 @@ import {
   getDatabase,
   ref,
   set,
+  get,
   update,
   remove,
   onValue,
@@ -295,11 +296,51 @@ document.addEventListener("DOMContentLoaded", () => {
     // For simplicity, we'll re-run the mobile setup if on mobile, or just let the global index logic work?
     // The mobile logic below uses `document.querySelectorAll(".film-item")` which needs to be re-run or use event delegation.
     // For now, let's keep it simple.
+
+    // Re-init sortable after re-render if admin
+    if (isAdmin) initSortable();
+  }
+
+  // --- SORTABLE ALBUM REORDER (Admin Only) ---
+  let sortableInstance = null;
+
+  function initSortable() {
+    if (sortableInstance) sortableInstance.destroy();
+    sortableInstance = new Sortable(filmTrack, {
+      animation: 200,
+      ghostClass: "film-item-ghost",
+      chosenClass: "film-item-chosen",
+      dragClass: "film-item-drag",
+      handle: ".film-frame",
+      onEnd: async (evt) => {
+        const { oldIndex, newIndex } = evt;
+        if (oldIndex === newIndex) return;
+
+        // Reorder in-memory arrays
+        const [moved] = allMemories.splice(oldIndex, 1);
+        allMemories.splice(newIndex, 0, moved);
+        memories.length = 0;
+        memories.push(...allMemories);
+
+        // Save order to Firebase
+        const order = allMemories.map((m) => m.id);
+        await set(ref(db, "albumOrder"), order);
+
+        showToast("Album order saved! 📋", "success");
+      },
+    });
+  }
+
+  function destroySortable() {
+    if (sortableInstance) {
+      sortableInstance.destroy();
+      sortableInstance = null;
+    }
   }
 
   // Load from Firebase
   const memoriesRef = ref(db, "memories");
-  onValue(memoriesRef, (snapshot) => {
+  onValue(memoriesRef, async (snapshot) => {
     const data = snapshot.val();
     if (data) {
       const dynamicMemories = Object.values(data);
@@ -321,11 +362,28 @@ document.addEventListener("DOMContentLoaded", () => {
       allMemories = [...INITIAL_MEMORIES];
     }
 
-    // Update global memories reference if used elsewhere?
-    // The rest of the code uses `memories` variable. We should update the `memories` array content or usage.
-    // Javascript const arrays are mutable content-wise, but we can't reassign `memories`.
-    // Better strategy: Change `const memories` at top to `let memories`?
-    // Or just use `memories.length = 0; memories.push(...)`
+    // Apply saved album order if it exists
+    try {
+      const orderSnap = await get(ref(db, "albumOrder"));
+      const savedOrder = orderSnap.val();
+      if (savedOrder && Array.isArray(savedOrder)) {
+        const memMap = new Map(allMemories.map((m) => [String(m.id), m]));
+        const reordered = [];
+        savedOrder.forEach((id) => {
+          const mem = memMap.get(String(id));
+          if (mem) {
+            reordered.push(mem);
+            memMap.delete(String(id));
+          }
+        });
+        // Append any memories not in the saved order (e.g. newly added)
+        memMap.forEach((mem) => reordered.push(mem));
+        allMemories = reordered;
+      }
+    } catch (e) {
+      console.warn("Could not load album order:", e);
+    }
+
     memories.length = 0;
     memories.push(...allMemories);
 
@@ -902,6 +960,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addPhotoBtn.style.display = "none";
       logoutBtn.style.display = "none";
       addPolaroidBtn.style.display = "none";
+      destroySortable();
 
       // Re-render to hide delete buttons
       if (isFullscreen) {
